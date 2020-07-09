@@ -8,14 +8,14 @@ using System.Threading;
 
 namespace SEDC.TimeTrackingApp.Hm.Domain.Entities
 {
-    public abstract class BaseActivity : IBaseActivity
+    public abstract class BaseActivity : BaseEntity, IBaseActivity
     {
         public DateTime StartTrackingActivity { get; set; }
         public DateTime StopTrackingActivity { get; set; }
         public TimeSpan TrackedTime { get; set; }
         public ActivityType ActivityType { get; set; }
 
-
+        
         public void TrackTime()
         {
             StartTrackingActivity = DateTime.Now;
@@ -24,15 +24,14 @@ namespace SEDC.TimeTrackingApp.Hm.Domain.Entities
             Console.WriteLine("To stop tracking time please hit enter");
             ConsoleKeyInfo key = Console.ReadKey();
 
-            if(key.Key == ConsoleKey.Enter)
+            if (key.Key == ConsoleKey.Enter)
             {
                 StopTrackingActivity = DateTime.Now;
                 TrackedTime = StopTrackingActivity - StartTrackingActivity;
-                Console.WriteLine($"You were {ActivityType.ToString()} for {TrackedTime.Minutes} min.");
+                Console.WriteLine($"You were {ActivityType.ToString()} for {TrackedTime.Minutes} min {TrackedTime.Seconds} sec.");
             }
         }
 
-        public abstract void PrintInfo();
     }
 
    

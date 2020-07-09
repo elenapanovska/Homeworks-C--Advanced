@@ -14,10 +14,5 @@ namespace SEDC.TimeTrackingApp.Hm.Domain.Entities
             ActivityType = ActivityType.Exercising;
         }
 
-        public override void PrintInfo()
-        {
-            Console.WriteLine($"{ActivityType.ToString()}: {ExercisingType.ToString()},  " +
-                $"you exercised for {TrackedTime.Minutes} min. from {StartTrackingActivity} to {StopTrackingActivity}");
-        }
     }
 }

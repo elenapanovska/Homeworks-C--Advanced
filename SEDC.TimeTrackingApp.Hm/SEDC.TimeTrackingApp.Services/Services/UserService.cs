@@ -14,6 +14,7 @@ namespace SEDC.TimeTrackingApp.Services.Services
     public class UserService<T> : IUserService<T> where T :  User
     {
         private IDatabase<T> db;
+        private ActivityServices<BaseActivity> activityServices = new ActivityServices<BaseActivity>();
 
         public  UserService()
         {
@@ -21,49 +22,57 @@ namespace SEDC.TimeTrackingApp.Services.Services
         }
         public void ChangeInfo(int userId, string firstName, string lastName)
         {
-            T user = db.GetUserById(userId);
+            var user = db.GetUserById(userId);
 
             if (ValidationHelpers.ValidateFirstAndLastName(firstName, lastName) == null)
             {
-                Console.WriteLine("You've entered somethig wrong. The first and last name should not be shorter than 2 characters " +
-                                   "and they slould not conatin any numbers!");
+                MessageHelepers.Message("You've entered somethig wrong. The first and last name should not be shorter than 2 characters " +
+                                   "and they slould not conatin any numbers!", ConsoleColor.Red);
                 return;
 
             }
             user.FirstName = firstName;
             user.LastName = lastName;
             db.UpdateUser(user);
-            Console.WriteLine("You succesfully changed your first and last name!");
+            MessageHelepers.Message("You succesfully changed your first and last name!", ConsoleColor.Green);
         }
 
         public void ChangePassword(int userId, string oldPassword, string newPassword)
         {
-            T user = db.GetUserById(userId);
+            var user = db.GetUserById(userId);
             if (user.Password == oldPassword && oldPassword != newPassword)
             {
                 if(ValidationHelpers.ValidatePassword(newPassword) == null)
                 {
-                    Console.WriteLine("Password should not be shorter than 6 characters, should contain at least one capital letter" +
-                                      "and should contain at least one number");
+
+                   MessageHelepers.Message("Password should not be shorter than 6 characters, should contain at least one capital letter" +
+                                           "and should contain at least one number", ConsoleColor.Red);
                     Thread.Sleep(3000);
                     return;
                 }
             }
             else
             {
-                Console.WriteLine("You enyered your old password wrong or you new password cannot be your old password!");
+                MessageHelepers.Message("You entered your old password wrong or you new password cannot be your old password!",ConsoleColor.Red);
                 Thread.Sleep(3000);
                 return;
             }
             user.Password = newPassword;
             db.UpdateUser(user);
-            Console.WriteLine("You succesfully changed your password!");
+            MessageHelepers.Message("You succesfully changed your password!", ConsoleColor.Green);
         }
 
-        public void DeactivateAccount(int userId)
+        public bool DeactivateAccount(T user)
         {
-            db.RemoveUser(userId);
-            Console.WriteLine("Your account has been deacivated");
+            Console.WriteLine("Are you sure you want to deactivate your account? y/n" );
+            string choice = Console.ReadLine();
+            if (choice == "y")
+            {
+                user.IsActive = false;
+                MessageHelepers.Message("Your account has been deacivated", ConsoleColor.Green);
+                return true;
+            }
+            return false;
         }
 
         public T LogIn(string username, string password)
@@ -75,9 +84,13 @@ namespace SEDC.TimeTrackingApp.Services.Services
             {
                 for (int i = 1; i <= 3; i++)
                 {
-                    Console.WriteLine($"Wrong username you have 3 attepts otherwise the app wil close");
+                    MessageHelepers.Message($"Wrong username you have 3 attepts otherwise the app wil close", ConsoleColor.Red);
                     Console.Write("Username: ");
                     username = Console.ReadLine();
+                    if (ValidationHelpers.DoesUserNameExist(users, username))
+                    {
+                        break;
+                    }
                     if (i == 3 && !ValidationHelpers.DoesUserNameExist(users, username))
                     {
                         Thread.Sleep(2000);
@@ -94,37 +107,71 @@ namespace SEDC.TimeTrackingApp.Services.Services
                 Environment.Exit(0);
             }
             Console.Clear();
+            
+
+            if(user.IsActive == false)
+            {
+                Console.WriteLine("Your account is deactivated! Do you want to activate it? y/n");
+                string choice = Console.ReadLine();
+                if(choice == "y")
+                {
+                    user.IsActive = true;
+                    MessageHelepers.Message("Your account is now active!", ConsoleColor.Green);
+                    MessageHelepers.Message("You succesfully logged in!", ConsoleColor.Green);
+                    return user;
+                }
+                else
+                {
+                    MessageHelepers.Message("You accout is still deactivated!", ConsoleColor.Red);
+                    return null;
+                }
+            }
+            MessageHelepers.Message("You succesfully logged in!", ConsoleColor.Green);
             return user;
         }
 
         public T Register(T user)
         {
-            if(ValidationHelpers.ValidateFirstAndLastName(user.FirstName, user.LastName) == null
+            if (ValidationHelpers.ValidateFirstAndLastName(user.FirstName, user.LastName) == null
                 || ValidationHelpers.ValidateAge(user.Age) == -1
                 || ValidationHelpers.ValidateUsername(user.Username) == null 
                 || ValidationHelpers.ValidatePassword(user.Password) == null)
             {
-                Console.WriteLine("You have entered something wrong!");
+                MessageHelepers.Message("You have entered something wrong!", ConsoleColor.Red);
                 Console.ReadLine();
                 return null;
             }
                 
             int id = db.Insert(user);
+            Console.Clear();
             return db.GetUserById(id);
         }
 
-        public void  SeeStatistics(User user)
+        public void  SeeStatistics(User user, int choice)
         {
-            Console.Clear();
-            Console.WriteLine($"{user.FirstName} this are yout time tracked activities:");
-            foreach (var activity in user.ListOfActivities)
+            switch (choice)
             {
-                activity.PrintInfo();
+                case 1: //Reading
+                    activityServices.ReadingStatistics(user);
+                    break;
+                case 2: //Working
+                    activityServices.WorkingStatistics(user);
+                    break;
+                case 3: // Exercising
+                    activityServices.ExercisingStatistics(user);
+                    break;
+                case 4: // Other hobbies
+                    activityServices.OtherHobbiesStatistics(user);
+                    break;
+                case 5: // General
+                    activityServices.GeneralStatistics(user);
+                    break;
+                default:
+                    break;
             }
-            Console.WriteLine("=====================================");
         }
 
-        public void AccountSettings(int id, int choice)
+        public bool AccountSettings(int id, int choice, T user)
         {
             switch (choice)
             {
@@ -146,9 +193,15 @@ namespace SEDC.TimeTrackingApp.Services.Services
                     ChangePassword(id, oldPassword, newPassword);
                     break;
                 case 3:
-                    DeactivateAccount(id);
+                    if(DeactivateAccount(user))
+                    {
+                        return true;
+                    }
+                    break;
+                case 4:
                     break;
             }
+            return false;
         }
     }
 }

@@ -14,10 +14,5 @@ namespace SEDC.TimeTrackingApp.Hm.Domain.Entities
             ActivityType = ActivityType.Working;
         }
 
-        public override void PrintInfo()
-        {
-            Console.WriteLine($"{ActivityType.ToString()}: {WorkingFrom.ToString()}, " +
-                $"you worked for {TrackedTime.Minutes} min. from {StartTrackingActivity} to {StopTrackingActivity}");
-        }
     }
 }

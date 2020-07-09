@@ -14,10 +14,5 @@ namespace SEDC.TimeTrackingApp.Hm.Domain.Entities
             ActivityType = ActivityType.OtherHobbies;
         }
 
-        public override void PrintInfo()
-        {
-            Console.WriteLine($"{ActivityType.ToString()}: {Hobby},  " +
-                $"you enjoyed in your hobbie for {TrackedTime.Minutes} min. from {StartTrackingActivity} to {StopTrackingActivity}");
-        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using SEDC.TimeTrackingApp.Hm.Domain.Entities;
+using SEDC.TimeTrackingApp.Hm.Domain.Enums;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -17,7 +19,7 @@ namespace SEDC.TimeTrackingApp.Services.Helpers
             {
                 return -1;
             }
-            if(parsedNum <= 0 && parsedNum > range)
+            if(parsedNum <= 0 || parsedNum > range)
             {
                 return -1;
             }
@@ -92,7 +94,7 @@ namespace SEDC.TimeTrackingApp.Services.Helpers
             {
                 if (user.Password != password)
                 {
-                    Console.WriteLine($"Wrong password you have 3 attepts otherwise the app wil close");
+                    MessageHelepers.Message("Wrong password you have 3 attepts otherwise the app wil close", ConsoleColor.Red);
                     Console.Write("Password: ");
                     password = Console.ReadLine();
 
@@ -115,6 +117,25 @@ namespace SEDC.TimeTrackingApp.Services.Helpers
                 }
             }
             return false;
+
+        }
+
+        public static int GetFavouriteType<T>(T type, List<T> listOfactivities ) where T : BaseActivity
+        {
+            int count = listOfactivities.Where(x => x.Equals(type)).Count();
+
+            return count;
+        }
+
+        public static bool CheckIfListIsEmpty<T>(List<T> list, string activity)
+        {
+            if(list.Count == 0)
+            {
+                MessageHelepers.Message($"Sorry your {activity} are empty because you haven't tracked any activity!", ConsoleColor.Red);
+                return false;
+            }
+            return true;
+
 
         }
     }

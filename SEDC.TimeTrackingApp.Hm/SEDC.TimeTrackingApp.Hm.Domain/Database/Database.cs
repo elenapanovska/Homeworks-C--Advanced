@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SEDC.TimeTrackingApp.Hm.Domain.Database
 {
-    public class Database<T> : IDatabase<T> where T :  User
+    public class Database<T> : IDatabase<T> where T :  BaseEntity
     {
         private List<T> dataB;
         public int IdCount { get; set; }
@@ -47,18 +47,5 @@ namespace SEDC.TimeTrackingApp.Hm.Domain.Database
             if (item != null) dataB.Remove(item);
         }
 
-        public List<BaseActivity> GetAllActivities(int userId)
-        {
-            T user = dataB.FirstOrDefault(u => u.Id == userId);
-            return user.ListOfActivities;
-        }
-
-
-        public BaseActivity GetActivity(ActivityType activity, int userId)
-        {
-            T user = dataB.FirstOrDefault(u => u.Id == userId);
-            var userActicity = user.ListOfActivities.FirstOrDefault(a => a.ActivityType == activity);
-            return userActicity;
-        }
     }
 }

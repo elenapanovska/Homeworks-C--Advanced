@@ -10,7 +10,11 @@ namespace SEDC.TimeTrackingApp.Hm.Domain.Interfaces
     {
         DateTime StartTrackingActivity { get; set; }
         DateTime StopTrackingActivity { get; set; }
+        TimeSpan TrackedTime { get; set; }
         ActivityType ActivityType { get; set; }
-        //List<BaseActivity> ActivitiesTimeTracked { get; set; }
+        void TrackTime();
+        //void PrintStatistics();
+
+
     }
 }

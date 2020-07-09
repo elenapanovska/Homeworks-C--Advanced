@@ -3,6 +3,7 @@ using SEDC.TimeTrackingApp.Services.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace SEDC.TimeTrackingApp.Services.Menus
 {
@@ -15,7 +16,14 @@ namespace SEDC.TimeTrackingApp.Services.Menus
             {
                 Console.WriteLine($"{i + 1}.) {list[i]} ");
             }
+
             int choice = ValidationHelpers.ParseNumber(Console.ReadLine(), list.Count);
+
+            if(choice == -1)
+            {
+                MessageHelepers.Message("You've entered something wrong! Try again!", ConsoleColor.Red);
+                Thread.Sleep(2000);
+            }
             return choice;
         }
 
@@ -52,7 +60,13 @@ namespace SEDC.TimeTrackingApp.Services.Menus
 
         public int AccountMenu()
         {
-            List<string> list = new List<string>() {"Change info", "Change password", "Deactive account"};
+            List<string> list = new List<string>() {"Change info", "Change password", "Deactive account", "<= Back"};
+            return ChooseOnMenu(list);
+        }
+
+        public int StatisticsMenu()
+        {
+            List<string> list = new List<string>() { "Reading", "Working", "Exercising", "Other hobbies", "General", "<= Back" };
             return ChooseOnMenu(list);
         }
     }

@@ -6,15 +6,14 @@ using System.Text;
 
 namespace SEDC.TimeTrackingApp.Hm.Domain.Interfaces
 {
-    public interface IDatabase<T> where T : User// IBaseActivity, IUser 
+    public interface IDatabase<T> where T : BaseEntity // IBaseActivity, IUser 
     {
         List<T> GetAll();
         T GetUserById(int id);
         int Insert(T entity);
         void UpdateUser(T user);
         void RemoveUser(int id);
-        List<BaseActivity> GetAllActivities(int id);
-        BaseActivity GetActivity(ActivityType activity, int userId);
+
 
 
 

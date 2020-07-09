@@ -5,6 +5,7 @@ using SEDC.TimeTrackingApp.Services.Menus;
 using SEDC.TimeTrackingApp.Services.Services;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SEDC.TimeTrackingApp.Hm.App
 {
@@ -13,7 +14,7 @@ namespace SEDC.TimeTrackingApp.Hm.App
         public static Menu menus = new Menu();
         public static User currentUser = new User();
         public static IUserService<User> userService = new UserService<User>();
-        public static AppServices<BaseActivity> appServices = new AppServices<BaseActivity>();
+        public static ActivityServices<BaseActivity> appServices = new ActivityServices<BaseActivity>();
         
         static void Main(string[] args)
         {
@@ -48,21 +49,23 @@ namespace SEDC.TimeTrackingApp.Hm.App
 
                         var user = new User(firstName, lastName, age, registerUserame, registerPassword);
                         userService.Register(user);
+                        MessageHelepers.Message("You succesfully registered!", ConsoleColor.Green);
+
                         currentUser = user;
-                        if (currentUser != null) continue;
+                        if (currentUser == null) continue;
                         break;
                     case 3:
                         Environment.Exit(0);
                         break;
                 }
-              
+                if (currentUser == null) continue;
                 bool isLoggedIn = true;
                 while (isLoggedIn)
                 {
                     Console.WriteLine($"Hi {currentUser.FirstName} choose one of the following?");
                     int choice = menus.MainMenu();
                     ActivityType currentActivity = (ActivityType)choice;
-
+                    Console.Clear();
                     switch (choice)
                     {
                         case 1:
@@ -72,11 +75,16 @@ namespace SEDC.TimeTrackingApp.Hm.App
                             appServices.TrackingTime(currentActivity, currentUser);
                             break;
                         case 5:
-                            userService.SeeStatistics(currentUser);
+                            if(!ValidationHelpers.CheckIfListIsEmpty(currentUser.ListOfActivities, "statistics")) continue;
+                            int statisticsMenu = menus.StatisticsMenu();
+                            userService.SeeStatistics(currentUser, statisticsMenu);
                             break;
                         case 6:
                             int accountMenu = menus.AccountMenu();
-                            userService.AccountSettings(currentUser.Id, accountMenu);
+                            if(userService.AccountSettings(currentUser.Id, accountMenu, currentUser))
+                            {
+                                isLoggedIn = !isLoggedIn;
+                            }
                             break;
                         case 7:
                             isLoggedIn = !isLoggedIn;
@@ -84,8 +92,6 @@ namespace SEDC.TimeTrackingApp.Hm.App
                         default:
                             break;
                     }
-
-                    Console.Clear();
                 }
             }
         }
@@ -97,7 +103,7 @@ namespace SEDC.TimeTrackingApp.Hm.App
                  userService.Register(new User("Bob", "Bobsky", 20, "bobsky", "Bobsky123")),
                  userService.Register(new User("John", "Smith", 25, "smith", "Smith123")),
             };
-
+            
             return users;
         }
 
