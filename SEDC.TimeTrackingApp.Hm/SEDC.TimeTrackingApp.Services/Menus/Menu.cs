@@ -11,20 +11,28 @@ namespace SEDC.TimeTrackingApp.Services.Menus
     {
         public int ChooseOnMenu<T>(List<T> list)
         {
-            Console.WriteLine("Enter a number to choose");
-            for (int i = 0; i < list.Count; i++)
+            //int choice;
+            while (true)
             {
-                Console.WriteLine($"{i + 1}.) {list[i]} ");
-            }
+                Console.WriteLine("Enter a number to choose");
+                for (int i = 0; i < list.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}.) {list[i]} ");
+                }
 
-            int choice = ValidationHelpers.ParseNumber(Console.ReadLine(), list.Count);
+                int choice = ValidationHelpers.ParseNumber(Console.ReadLine(), list.Count);
 
-            if(choice == -1)
-            {
-                MessageHelepers.Message("You've entered something wrong! Try again!", ConsoleColor.Red);
-                Thread.Sleep(2000);
+                if (choice == -1)
+                {
+                    MessageHelepers.Message("You've entered something wrong! Try again!", ConsoleColor.Red);
+                    Thread.Sleep(2000);
+                    continue;
+                }
+                else
+                {
+                    return choice;
+                }
             }
-            return choice;
         }
 
         public int LogInMenu()

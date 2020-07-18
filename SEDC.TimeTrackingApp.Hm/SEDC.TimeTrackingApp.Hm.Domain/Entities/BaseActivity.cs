@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace SEDC.TimeTrackingApp.Hm.Domain.Entities
 {
-    public abstract class BaseActivity : BaseEntity, IBaseActivity
+    public  class BaseActivity : BaseEntity, IBaseActivity
     {
         public DateTime StartTrackingActivity { get; set; }
         public DateTime StopTrackingActivity { get; set; }

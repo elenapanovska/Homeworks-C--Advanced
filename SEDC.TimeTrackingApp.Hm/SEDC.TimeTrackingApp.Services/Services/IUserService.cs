@@ -10,10 +10,11 @@ namespace SEDC.TimeTrackingApp.Services.Services
     {
         void ChangePassword(int userId, string oldPassword, string newPassword);
         void ChangeInfo(int userId, string firstName, string lastName);
-        bool DeactivateAccount(T user);
-        T LogIn(string username, string password);
-        T Register(T user);
+        bool DeactivateAccount(User user);
+        User LogIn(string username, string password);
+        User Register(T user);
         void SeeStatistics(User user, int choice);
-        bool AccountSettings(int id, int choice, T user);
+        bool AccountSettings(int id, int choice, User user);
+        void AddActivity<F>(User user, F activity, List<F> list) where F : BaseActivity;
     }
 }

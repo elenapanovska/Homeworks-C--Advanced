@@ -1,4 +1,5 @@
-﻿using SEDC.TimeTrackingApp.Hm.Domain.Entities;
+﻿using SEDC.TimeTrackingApp.Hm.Domain.Database;
+using SEDC.TimeTrackingApp.Hm.Domain.Entities;
 using SEDC.TimeTrackingApp.Hm.Domain.Enums;
 using SEDC.TimeTrackingApp.Hm.Domain.Interfaces;
 using SEDC.TimeTrackingApp.Services.Helpers;
@@ -13,7 +14,13 @@ namespace SEDC.TimeTrackingApp.Services.Services
     public class ActivityServices<T> where T : BaseActivity
     {
         public static Menu menus = new Menu();
-        public void TrackingTime(ActivityType activity, User user)
+        private IDatabase<User> _db;
+
+        public ActivityServices()
+        {
+            _db = new Database<User>();
+        }
+        public void TrackingTime(ActivityType activity, User user, IUserService<User> userService)
         {
             Console.Clear();
             switch (activity)
@@ -25,32 +32,45 @@ namespace SEDC.TimeTrackingApp.Services.Services
                     Console.Write("Pages: ");
                     reading.Pages = ValidationHelpers.ParseNumber(Console.ReadLine(),int.MaxValue);
                     reading.BookType = (BookType)menus.ShowBookTypes();
-                    MessageHelepers.Message("Activity is succesfully tracked!", ConsoleColor.Green);
+                    reading.Id = user.Id;
+
                     user.ListOfActivities.Add(reading);
+                    userService.AddActivity(user, reading, user.ReadingActivities);
+
+                    MessageHelepers.Message("Activity is succesfully tracked!", ConsoleColor.Green);
                     break;
                 case ActivityType.Exercising:
                     var exercising = new Exercising();
                     exercising.TrackTime();
                     Console.WriteLine("Please enter what kind of workout did you do");
                     exercising.ExercisingType = (ExercisingType)menus.ShowExercisingTypes();
-                    MessageHelepers.Message("Activity is succesfully tracked!", ConsoleColor.Green);
+                    
                     user.ListOfActivities.Add(exercising);
+                    userService.AddActivity(user, exercising, user.ExercisingActivities);
+
+                    MessageHelepers.Message("Activity is succesfully tracked!", ConsoleColor.Green);
                     break;
                 case ActivityType.Working:
                     var working = new Working();
                     working.TrackTime();
                     Console.WriteLine("Where were you working from?");
                     working.WorkingFrom = (WorkingFrom)menus.ShowWorkingOptions();
-                    MessageHelepers.Message("Activity is succesfully tracked!", ConsoleColor.Green);
+                   
                     user.ListOfActivities.Add(working);
+                    userService.AddActivity(user, working, user.WorkingActivities);
+
+                    MessageHelepers.Message("Activity is succesfully tracked!", ConsoleColor.Green);
                     break;
                 case ActivityType.OtherHobbies:
                     var otherHobbies = new OtherHobbies();
                     otherHobbies.TrackTime();
                     Console.WriteLine("Please enter the name of the hobby");
                     otherHobbies.Hobby = Console.ReadLine();
-                    MessageHelepers.Message("Activity is succesfully tracked!", ConsoleColor.Green);
+                    
                     user.ListOfActivities.Add(otherHobbies);
+                    userService.AddActivity(user, otherHobbies, user.OtherHobbiesActivities);
+                        
+                    MessageHelepers.Message("Activity is succesfully tracked!", ConsoleColor.Green);
                     break;
                 default:
                     break;
@@ -60,9 +80,12 @@ namespace SEDC.TimeTrackingApp.Services.Services
         public void ReadingStatistics(User user)
         {
             Console.Clear();
+        
+            //var allReadingAc = user.ListOfActivities.OfType<Reading>().ToList();
+            //var allReadingAc = user.ListOfActivities.Where(ac => ac.ActivityType == ActivityType.Reading).ToList();
 
-            var allReadingAc = user.ListOfActivities.OfType<Reading>().ToList();
-
+            var allReadingAc = user.ReadingActivities;
+            
             if (!ValidationHelpers.CheckIfListIsEmpty(allReadingAc, "reading statistics")) return;
 
             var totalaReadingHours = allReadingAc.Sum(hours => hours.TrackedTime.Minutes);
@@ -96,7 +119,9 @@ namespace SEDC.TimeTrackingApp.Services.Services
         {
             Console.Clear();
 
-            var allWorkingAc = user.ListOfActivities.OfType<Working>().ToList();
+            //var allWorkingAc = user.ListOfActivities.OfType<Working>().ToList();
+            
+            var allWorkingAc = user.WorkingActivities;
 
             if (!ValidationHelpers.CheckIfListIsEmpty(allWorkingAc, "working statistics")) return;
 
@@ -133,7 +158,9 @@ namespace SEDC.TimeTrackingApp.Services.Services
         {
             Console.Clear();
 
-            var allExercisingAc = user.ListOfActivities.OfType<Exercising>().ToList();
+            //var allExercisingAc = user.ListOfActivities.OfType<Exercising>().ToList();
+
+            var allExercisingAc = user.ExercisingActivities;
 
             if (!ValidationHelpers.CheckIfListIsEmpty(allExercisingAc, "exercising statistics")) return;
 
@@ -166,7 +193,9 @@ namespace SEDC.TimeTrackingApp.Services.Services
         {
             Console.Clear();
 
-            var allOtherHobbies = user.ListOfActivities.OfType<OtherHobbies>().ToList();
+            //var allOtherHobbies = user.ListOfActivities.OfType<OtherHobbies>().ToList();
+
+            var allOtherHobbies = user.OtherHobbiesActivities;
 
             if (!ValidationHelpers.CheckIfListIsEmpty(allOtherHobbies, "other hobbies statistics")) return;
 

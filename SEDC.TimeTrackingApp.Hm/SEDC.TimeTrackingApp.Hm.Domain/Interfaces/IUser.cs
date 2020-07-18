@@ -13,8 +13,12 @@ namespace SEDC.TimeTrackingApp.Hm.Domain.Interfaces
         int Age { get; set; }
         string Username { get; set; }
         string Password { get; set; }
-        List<BaseActivity> ListOfActivities { get; set; } 
-        
+        List<BaseActivity> ListOfActivities { get; set; }
+        List<Reading> ReadingActivities { get; set; }
+        List<Working> WorkingActivities { get; set; }
+        List<Exercising> ExercisingActivities { get; set; }
+        List<OtherHobbies> OtherHobbiesActivities { get; set; }
+
 
 
     }

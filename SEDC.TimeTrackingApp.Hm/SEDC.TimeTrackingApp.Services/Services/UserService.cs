@@ -13,12 +13,12 @@ namespace SEDC.TimeTrackingApp.Services.Services
 {
     public class UserService<T> : IUserService<T> where T :  User
     {
-        private IDatabase<T> db;
+        private IDatabase<User> db;
         private ActivityServices<BaseActivity> activityServices = new ActivityServices<BaseActivity>();
 
         public  UserService()
         {
-            db = new Database<T>();
+            db = new Database<User>();
         }
         public void ChangeInfo(int userId, string firstName, string lastName)
         {
@@ -62,7 +62,7 @@ namespace SEDC.TimeTrackingApp.Services.Services
             MessageHelepers.Message("You succesfully changed your password!", ConsoleColor.Green);
         }
 
-        public bool DeactivateAccount(T user)
+        public bool DeactivateAccount(User user)
         {
             Console.WriteLine("Are you sure you want to deactivate your account? y/n" );
             string choice = Console.ReadLine();
@@ -75,10 +75,10 @@ namespace SEDC.TimeTrackingApp.Services.Services
             return false;
         }
 
-        public T LogIn(string username, string password)
+        public User LogIn(string username, string password)
         {
             var users = db.GetAll();
-            T user = null;
+            User user = null;
 
             if(!ValidationHelpers.DoesUserNameExist(users, username))
             {
@@ -130,7 +130,7 @@ namespace SEDC.TimeTrackingApp.Services.Services
             return user;
         }
 
-        public T Register(T user)
+        public User Register(T user)
         {
             if (ValidationHelpers.ValidateFirstAndLastName(user.FirstName, user.LastName) == null
                 || ValidationHelpers.ValidateAge(user.Age) == -1
@@ -171,7 +171,7 @@ namespace SEDC.TimeTrackingApp.Services.Services
             }
         }
 
-        public bool AccountSettings(int id, int choice, T user)
+        public bool AccountSettings(int id, int choice, User user)
         {
             switch (choice)
             {
@@ -202,6 +202,12 @@ namespace SEDC.TimeTrackingApp.Services.Services
                     break;
             }
             return false;
+        }
+
+        public void AddActivity<F>(User user, F activity, List<F> list) where F : BaseActivity
+        {
+            list.Add(activity);
+            db.UpdateUser(user);
         }
     }
 }

@@ -14,6 +14,11 @@ namespace SEDC.TimeTrackingApp.Hm.Domain.Entities
         public string Username { get; set; }
         public string Password { get; set; }
         public bool IsActive { get; set; }
+        public List<Reading> ReadingActivities { get; set; }
+        public List<Working> WorkingActivities { get; set; }
+        public List<Exercising> ExercisingActivities { get; set; }
+        public List<OtherHobbies> OtherHobbiesActivities { get; set; }
+
         public List<BaseActivity> ListOfActivities { get; set; }
 
         public User(string firstName, string lastName, int age, string username, string password)
@@ -24,11 +29,21 @@ namespace SEDC.TimeTrackingApp.Hm.Domain.Entities
             Username = username;
             Password = password;
             ListOfActivities = new List<BaseActivity>();
+            ReadingActivities = new List<Reading>();
+            WorkingActivities = new List<Working>();
+            ExercisingActivities = new List<Exercising>();
+            OtherHobbiesActivities = new List<OtherHobbies>();
             IsActive = true;
         }
 
         public User()
         {
+            IsActive = true;
+            ListOfActivities = new List<BaseActivity>();
+            ReadingActivities = new List<Reading>();
+            WorkingActivities = new List<Working>();
+            ExercisingActivities = new List<Exercising>();
+            OtherHobbiesActivities = new List<OtherHobbies>();
         }
     }
 }

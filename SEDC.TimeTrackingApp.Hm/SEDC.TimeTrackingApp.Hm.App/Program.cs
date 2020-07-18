@@ -18,7 +18,7 @@ namespace SEDC.TimeTrackingApp.Hm.App
         
         static void Main(string[] args)
         {
-            UserData();
+            //UserData();
             while (true)
             {
                 int userChoice = menus.LogInMenu();
@@ -72,10 +72,10 @@ namespace SEDC.TimeTrackingApp.Hm.App
                         case 2:
                         case 3:
                         case 4:
-                            appServices.TrackingTime(currentActivity, currentUser);
+                            appServices.TrackingTime(currentActivity, currentUser, userService);
                             break;
                         case 5:
-                            if(!ValidationHelpers.CheckIfListIsEmpty(currentUser.ListOfActivities, "statistics")) continue;
+                           if(!ValidationHelpers.CheckIfListIsEmpty(currentUser.ListOfActivities, "statistics")) continue;
                             int statisticsMenu = menus.StatisticsMenu();
                             userService.SeeStatistics(currentUser, statisticsMenu);
                             break;
@@ -96,15 +96,10 @@ namespace SEDC.TimeTrackingApp.Hm.App
             }
         }
 
-        public static List<User> UserData()
+        public static void  UserData()
         {
-            List<User> users = new List<User>()
-            {
-                 userService.Register(new User("Bob", "Bobsky", 20, "bobsky", "Bobsky123")),
-                 userService.Register(new User("John", "Smith", 25, "smith", "Smith123")),
-            };
-            
-            return users;
+            userService.Register(new User("Bob", "Bobsky", 20, "bobsky", "Bobsky123"));
+            userService.Register(new User("John", "Smith", 25, "smith", "Smith123")); 
         }
 
     }
